@@ -28,7 +28,7 @@ def showScreen():
     iterate()  
     # draw  
     drawCircle([400,400],100,[1,1,1],2)
-    drawMatrix(JET, 10, [100,100])
+    drawMatrix(JET, 5, [100,100])
     glutSwapBuffers()
 
 
