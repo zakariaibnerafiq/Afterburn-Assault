@@ -7,8 +7,8 @@ import random
 from components import *
 from midpointCircle import drawCircle
 from midpointLine import drawLine
-from jet import JET
-
+from jet.jet import JET, JET_COLOR
+from jetClass import Jet
 # ===============Keyboard Listener================
 
 
@@ -27,8 +27,8 @@ def showScreen():
     glLoadIdentity()
     iterate()  
     # draw  
-    drawCircle([400,400],100,[1,1,1],2)
-    drawMatrix(JET, 5, [100,100])
+    player.draw(boundary= True)
+    
     glutSwapBuffers()
 
 
@@ -42,8 +42,7 @@ glutInitDisplayMode(GLUT_RGBA)
 glutInitWindowSize(800, 800)
 glutInitWindowPosition(0, 0)
 wind = glutCreateWindow(b"Shoot the circles!")
-
-
+player = Jet([100,100], JET, JET_COLOR, 2)
 glutDisplayFunc(showScreen)
 animate(5)
 

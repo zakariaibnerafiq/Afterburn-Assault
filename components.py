@@ -217,7 +217,7 @@ class Number:
             self.drawMatrix(self.numbers[int(string[i])], px, [x,y])
             x += px*7
         glEnd()
-from jet import JET, JET_COLOR
+from jet.jet import JET_COLOR
 
 def drawMatrix(arr,px, offset):
     x = len(arr)
