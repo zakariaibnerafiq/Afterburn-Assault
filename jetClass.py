@@ -1,7 +1,7 @@
 from OpenGL.GL import *
 from OpenGL.GLUT import *
 from OpenGL.GLU import *
-
+import numpy as np
 from midpointLine import drawLine
 
 class Jet:
