@@ -3,12 +3,15 @@ from OpenGL.GLUT import *
 from OpenGL.GLU import *
 import random
 
+
 # importing Assets
 from components import *
 from midpointCircle import drawCircle
 from midpointLine import drawLine
 from jet.jet import JET, JET_COLOR
 from jetClass import Jet
+
+from hpbar import HealthBar
 # ===============Keyboard Listener================
 
 def keyboard(key, x, y):
@@ -34,9 +37,10 @@ def showScreen():
     glLoadIdentity()
     iterate()  
     # draw  
-    player.draw(boundary= True)
-    num.draw(str(animation_loop), [100, 700],[1,1,1],2)
-    num.draw(str(animation_loop), [100, 500],[1,1,1],2)
+    player.draw()
+    player_healthbar.draw(player.health)
+    num.draw(str(animation_loop), [100, 700],[1,1,1],5)
+    num.draw(str(animation_loop), [100, 500],[1,1,1],5)
     
     glutSwapBuffers()
 
@@ -45,6 +49,10 @@ def animate(value):
     global animation_loop
     animation_loop = (animation_loop + 1) % 100
     
+    if animation_loop % 2 == 0:
+        player.health -= 1
+        if player.health <= 0:
+            player.health = 100
     
     glutPostRedisplay()
     glutTimerFunc(30, animate, 5)
@@ -58,7 +66,7 @@ animation_loop = 0
 
 player = Jet([100,100], JET, JET_COLOR, 2)
 num = Number()
-
+player_healthbar = HealthBar(100,[50,10], [5,760])
 glutDisplayFunc(showScreen)
 animate(5)
 glutKeyboardFunc(keyboard)

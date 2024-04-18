@@ -11,6 +11,7 @@ class Jet:
         self.colorPalette = colorPalette
         self.px = px
         self.size = [len(drawArr[0])*px, len(drawArr)*px]
+        self.health = 100
     
     def draw(self, boundary = False):
         x = len(self.drawArr)
