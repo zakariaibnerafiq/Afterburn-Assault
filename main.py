@@ -11,7 +11,7 @@ from midpointLine import drawLine
 from jet.jet import JET, JET_COLOR
 from jetClass import Jet
 
-from button import Button
+from button import Button, Text
 from hpbar import HealthBar
 # ===============Keyboard Listener================
 
@@ -23,6 +23,16 @@ def keyboard(key, x, y):
 def mouse(button, state, x, y):
     button = button    
         
+def HOMEPAGE():
+    Text.draw("AFTERBURN", [178, 700], [1,1,1], 7)
+    Text.draw("ASSAULT", [228, 600], [1,1,1], 7)
+
+def GAMEPAGE():
+    player.draw()
+    player_healthbar.draw(player.health)
+    num.draw(str(animation_loop), [100, 700],[1,1,1],5)
+    num.draw(str(animation_loop), [100, 500],[1,1,1],5)
+    pass 
 def iterate():
     glViewport(0, 0, 800, 800)
     glMatrixMode(GL_PROJECTION)
@@ -40,21 +50,18 @@ def showScreen():
     # draw  
     
     if homepage:
-        number_button.draw(True)
-        lineButton.draw(True)
+        HOMEPAGE()
+        
     elif levelpage:
         pass
     elif gamepage:
-        pass
+        GAMEPAGE()
     elif pausepage:
         pass
     elif gameoverpage:
         pass
     
-    player.draw()
-    player_healthbar.draw(player.health)
-    num.draw(str(animation_loop), [100, 700],[1,1,1],5)
-    num.draw(str(animation_loop), [100, 500],[1,1,1],5)
+    
     
     glutSwapBuffers()
 
@@ -84,7 +91,7 @@ gamepage = False
 pausepage = False
 gameoverpage = False
 
-number_button = Button([200,700], [1,1,1], 8, 3, ['EXIT'])
+number_button = Button([200,700], [1,1,1], 8, 3, ['PLAY'])
 
 lineButton = Button([200,600], [1,1,1], 6, 1, [[0, 0, 0, 50,0,50],[0, 50, 50, 25,0,25]])
 player = Jet([100,100], JET, JET_COLOR, 2)

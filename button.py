@@ -84,3 +84,22 @@ class Button:
             return True
         return False
 
+
+class Text:
+    def draw(string, pos, color, px):
+        glColor3f(color[0], color[1], color[2])
+        glPointSize(px) 
+        glBegin(GL_POINTS)
+        x = pos[0]
+        y = pos[1]
+        for i in string:
+            matrix  = CHARACTERS[i]
+            
+            for j in range(7):
+                y_ = (7-j)*px + y
+                for k in range(6):
+                    if matrix[j][k] == 1:
+                        x_ = (k+1)*px + x
+                        glVertex2f(x_,y_)
+            x += 7*px
+        glEnd()
