@@ -29,8 +29,8 @@ def mouse(button, state, x, y):
             glutLeaveMainLoop()
         
 def HOMEPAGE():
-    Text.draw("AFTERBURN", [178, 700], [1,1,1], 7)
-    Text.draw("ASSAULT", [228, 600], [1,1,1], 7)
+    Text.draw("AFTERBURN", [178, 650], [1,1,1], 7)
+    Text.draw("ASSAULT", [228, 580], [1,1,1], 7)
     play_button.draw(True)
     quitButton.draw(True)
 
