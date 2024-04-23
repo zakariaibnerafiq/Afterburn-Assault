@@ -16,16 +16,23 @@ from hpbar import HealthBar
 # ===============Keyboard Listener================
 
 def keyboard(key, x, y):
+    
     global angle
     if key == b"q":
         angle = (angle + 10) % 360
 
 def mouse(button, state, x, y):
-    button = button    
+    y = 800 - y
+    if homepage:
+        
+        if quitButton.pressed(x, y):
+            glutLeaveMainLoop()
         
 def HOMEPAGE():
     Text.draw("AFTERBURN", [178, 700], [1,1,1], 7)
     Text.draw("ASSAULT", [228, 600], [1,1,1], 7)
+    play_button.draw(True)
+    quitButton.draw(True)
 
 def GAMEPAGE():
     player.draw()
@@ -82,7 +89,7 @@ glutInit()
 glutInitDisplayMode(GLUT_RGBA)
 glutInitWindowSize(800, 800)
 glutInitWindowPosition(0, 0)
-wind = glutCreateWindow(b"Shoot the circles!")
+wind = glutCreateWindow(b"Afterburn Assault")
 animation_loop = 0
 # Page Logic
 homepage = True
@@ -90,8 +97,12 @@ levelpage = False
 gamepage = False
 pausepage = False
 gameoverpage = False
+# ===================
+# Button Logic - Homepage
+play_button = Button([324,400], [0,1,0], 4, 3, ['PLAY'], [20,20])
+quitButton = Button([324,300], [1,0,0], 4, 3, ['EXIT'], [20,20])
 
-number_button = Button([200,700], [1,1,1], 8, 3, ['PLAY'])
+
 
 lineButton = Button([200,600], [1,1,1], 6, 1, [[0, 0, 0, 50,0,50],[0, 50, 50, 25,0,25]])
 player = Jet([100,100], JET, JET_COLOR, 2)
