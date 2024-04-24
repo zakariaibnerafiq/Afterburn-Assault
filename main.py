@@ -23,23 +23,55 @@ def keyboard(key, x, y):
 
 def mouse(button, state, x, y):
     y = 800 - y
+    global homepage, levelpage, gamepage, pausepage, gameoverpage, level, delay,animation_loop
+    
     if homepage:
-        
-        if quitButton.pressed(x, y):
-            glutLeaveMainLoop()
+        if not delay[0]:
+            if play_button.pressed(x, y):
+                homepage = False
+                levelpage = True
+                delay = [True, (animation_loop-90)%100]
+            if quitButton.pressed(x, y):
+                glutLeaveMainLoop()
+    elif levelpage:
+        if not delay[0]:
+            if level1_button.pressed(x, y):
+                level = 1
+                levelpage = False
+                gamepage = True
+            if level2_button.pressed(x, y):
+                level = 2
+                levelpage = False
+                gamepage = True
+            if backtoHomeButton.pressed(x, y):
+                levelpage = False
+                homepage = True
         
 def HOMEPAGE():
     Text.draw("AFTERBURN", [178, 650], [1,1,1], 7)
     Text.draw("ASSAULT", [228, 580], [1,1,1], 7)
     play_button.draw(True)
     quitButton.draw(True)
-
+def LEVELPAGE():
+    global animation_loop
+    Text.draw("CHOOSE LEVEL", [190, 580], [1,1,0], 5)
+    level1_button.draw(True)
+    level2_button.draw(True)
+    backtoHomeButton.draw()
+    Text.draw("HOME", [100, 714], [0,1,1], 4)
+    
+    
+    
+    
 def GAMEPAGE():
+    global animation_loop, level
     player.draw()
     player_healthbar.draw(player.health)
-    num.draw(str(animation_loop), [100, 700],[1,1,1],5)
-    num.draw(str(animation_loop), [100, 500],[1,1,1],5)
-    pass 
+    if level == 1:
+        Text.draw("LEVEL 1", [100, 700], [1,1,1], 5)
+    elif level == 2:
+        Text.draw("LEVEL 2", [100, 700], [1,1,1], 5)
+    
 def iterate():
     glViewport(0, 0, 800, 800)
     glMatrixMode(GL_PROJECTION)
@@ -49,7 +81,7 @@ def iterate():
     glLoadIdentity()
 
 def showScreen():
-    global animation_loop
+    global animation_loop, homepage, levelpage, gamepage, pausepage, gameoverpage
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glClearColor(0, 0, 0, 1.0)
     glLoadIdentity()
@@ -58,9 +90,8 @@ def showScreen():
     
     if homepage:
         HOMEPAGE()
-        
     elif levelpage:
-        pass
+        LEVELPAGE()
     elif gamepage:
         GAMEPAGE()
     elif pausepage:
@@ -72,16 +103,22 @@ def showScreen():
     
     glutSwapBuffers()
 
-
-def animate(value):
+def game():
     global animation_loop
-    animation_loop = (animation_loop + 1) % 100
-    
     if animation_loop % 2 == 0:
         player.health -= 1
         if player.health <= 0:
             player.health = 100
-    
+def animate(value):
+    global animation_loop, delay
+    animation_loop = (animation_loop + 1) % 100
+    if delay[0]:
+        if delay[1] == animation_loop:
+            delay = [False, 0]
+    if gamepage:
+        game()
+        
+
     glutPostRedisplay()
     glutTimerFunc(30, animate, 5)
     
@@ -92,19 +129,26 @@ glutInitWindowPosition(0, 0)
 wind = glutCreateWindow(b"Afterburn Assault")
 animation_loop = 0
 # Page Logic
+delay = [False, 0]
 homepage = True
 levelpage = False
 gamepage = False
 pausepage = False
 gameoverpage = False
+# Level Logic
+level = 1
 # ===================
 # Button Logic - Homepage
 play_button = Button([324,400], [0,1,0], 4, 3, ['PLAY'], [20,20])
 quitButton = Button([324,300], [1,0,0], 4, 3, ['EXIT'], [20,20])
 
+# Button Logic - Levelpage
+level1_button = Button([282,400], [0,1,0], 4, 3, ['LEVEL 1'], [20,20])
+level2_button = Button([282,300], [0,1,0], 4, 3, ['LEVEL 2'], [20,20])
+# Universal Button
+backtoHomeButton = Button([50,700], [0,1,1], 3, 1, [[0, 35, 0, 35, 35, 165, 35,165, 165, 165],[25, 50, 25, 0, 50, 50,0,0, 50, 0]], [5,5])
 
 
-lineButton = Button([200,600], [1,1,1], 6, 1, [[0, 0, 0, 50,0,50],[0, 50, 50, 25,0,25]])
 player = Jet([100,100], JET, JET_COLOR, 2)
 num = Number()
 player_healthbar = HealthBar(100,[50,10], [5,760])
