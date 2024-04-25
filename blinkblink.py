@@ -19,14 +19,38 @@ STARCOLOR= {
     3: [0.16, 0.58, 0.98],
     4: [0.36,0.72,0.96],
 }
+STARCOLOR2= {
+    1: [0.49, 0.007, 0.023],
+    2: [0.827, 0.078, 0.0509],
+    3: [0.8, 0.086, 0.007],
+    4: [0.98,0.639,0.243],
+}
 
+def smallStar(pos,color,px = 1):
+    x = pos[0]
+    y = pos[1]
+    glPointSize(px)
+    glBegin(GL_POINTS)
+    top = [x,y+1*px]
+    bottom = [x,y-1*px]
+    left = [x-1*px,y]
+    right = [x+1*px,y]
+    glColor3f(color[0],color[1],color[2])
+    glVertex2f(x,y)
+    glColor4f(color[0],color[1],color[2],0.5)
+    glVertex2f(top[0],top[1])
+    glVertex2f(bottom[0],bottom[1])
+    glVertex2f(left[0],left[1])
+    glVertex2f(right[0],right[1])
+    glEnd()
+    
 class DRAWMATRIX:
-    def draw(self, pos, drawArr, colorPalette, px = 1):
+    def draw(pos, drawArr, colorPalette, px = 1):
         x = len(drawArr)
         glPointSize(px)
         glBegin(GL_POINTS)
         for i in range(len(drawArr)):
-            print(i)
+
             for j in range(len(drawArr[i])):
                 if drawArr[i][j] > 0:
                     x_ = ((j+1)*px)-1 + pos[0]

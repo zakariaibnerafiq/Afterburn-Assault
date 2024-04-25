@@ -1,4 +1,4 @@
-array = [[94, 186, 247]]
+array = [[105, 25, 209]]
 
 for i in array:
     r,g,b = i

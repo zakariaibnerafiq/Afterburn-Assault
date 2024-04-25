@@ -47,14 +47,19 @@ def mouse(button, state, x, y):
                 levelpage = False
                 homepage = True
 def BACKGROUND():
-    for i in starpos:
-        DRAWMATRIX.draw(i, STARBIG, STARCOLOR, 1)
+    for i in range(50):
+        DRAWMATRIX.draw(starpos[i], STARBIG, STARCOLOR, 1)
+        DRAWMATRIX.draw(starpos2[i], STARBIG, STARCOLOR2, 1)
+        
+    for i in range(800):
+        smallStar(starpos3[i], [0.4,0.098,0.819], 1)
         
 def HOMEPAGE():
     Text.draw("AFTERBURN", [178, 650], [1,1,1], 7)
     Text.draw("ASSAULT", [228, 580], [1,1,1], 7)
     play_button.draw(True)
     quitButton.draw(True)
+    
 def LEVELPAGE():
     global animation_loop
     Text.draw("CHOOSE LEVEL", [190, 580], [1,1,0], 5)
@@ -132,8 +137,13 @@ wind = glutCreateWindow(b"Afterburn Assault")
 animation_loop = 0
 # background
 starpos = []
-for i in range(100):
+starpos2 = []
+starpos3 = []
+for i in range(50):
     starpos.append([random.randint(0,800), random.randint(0,800)])
+    starpos2.append([random.randint(0,800), random.randint(0,800)])
+for i in range(800):
+    starpos3.append([random.randint(0,800), random.randint(0,800)])
 # Page Logic
 delay = [False, 0]
 homepage = True
