@@ -76,7 +76,14 @@ def GAMEPAGE():
         Text.draw("LEVEL 1", [100, 700], [1,1,1], 5)
     elif level == 2:
         Text.draw("LEVEL 2", [100, 700], [1,1,1], 5)
-    
+
+def backgroundAnimation():
+    for i in range(50):
+        starpos[i][1] = (starpos[i][1] - 2) % 800
+        starpos2[i][1] = (starpos2[i][1] - 3) % 800
+    for i in range(800):
+        starpos3[i][1] = (starpos3[i][1] - 1) % 800
+        
 def iterate():
     glViewport(0, 0, 800, 800)
     glMatrixMode(GL_PROJECTION)
@@ -119,6 +126,9 @@ def game():
 def animate(value):
     global animation_loop, delay
     animation_loop = (animation_loop + 1) % 100
+    
+    backgroundAnimation()
+    
     if delay[0]:
         if delay[1] == animation_loop:
             delay = [False, 0]
