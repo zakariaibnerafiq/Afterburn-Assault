@@ -7,13 +7,21 @@ import random
 # importing Assets
 from midpointCircle import drawCircle
 from midpointLine import drawLine
-from jet.jet import JET, JET_COLOR
+from jet.jet import *
 from jetClass import Jet
 from blinkblink import *
 
 from button import Button, Text
 from hpbar import HealthBar
 # ===============Keyboard Listener================
+
+def specialKeyListener(key, x, y):
+    global cor2, bxx
+    glutPostRedisplay()
+    if key==GLUT_KEY_RIGHT:
+        player.pos[0] = (player.pos[0] + 5) % 800
+    if key==GLUT_KEY_LEFT:
+        player.pos[0] = (player.pos[0] - 5) % 800
 
 def keyboard(key, x, y):
     
@@ -73,14 +81,27 @@ def LEVELPAGE():
     backtoHomeButton.draw()
     Text.draw("HOME", [100, 714], [0,1,1], 4)
     
+def LEVEL_ONE():
+    global enemy1, enemy2, enemy3
+    enemy1 = Jet([500,400], ENEMY_JET, JET_COLOR, 2)
+    enemy2 = Jet([400,300], ENEMY_JET, JET_COLOR, 2)
+    enemy3 = Jet([300,200], ENEMY_JET, JET_COLOR, 2)
+ 
+    
 def GAMEPAGE():
     global animation_loop, level
     player.draw()
+    if level == 1:
+        LEVEL_ONE()
+        enemy1.draw(True)
+        enemy2.draw(True)
+        enemy3.draw(True)
     player_healthbar.draw(player.health)
     if level == 1:
         Text.draw("LEVEL 1", [100, 700], [1,1,1], 5)
     elif level == 2:
         Text.draw("LEVEL 2", [100, 700], [1,1,1], 5)
+        
 
 def backgroundAnimation():
     for i in range(50):
@@ -130,17 +151,23 @@ def showScreen():
     glutSwapBuffers()
 
 def game():
+    glutSpecialFunc(specialKeyListener)
+    
     global animation_loop
     if animation_loop % 2 == 0:
         player.health -= 1
         if player.health <= 0:
             player.health = 100
+    # enemy.pos[0] = (enemy.pos[0] + 1) % 800
+    
             
 def animate(value):
     global animation_loop, delay
     animation_loop = (animation_loop + 1) % 100
     
     backgroundAnimation()
+
+    
     
     if delay[0]:
         if delay[1] == animation_loop:
@@ -195,12 +222,15 @@ level2_button = Button([282,300], [0,1,0], 4, 3, ['LEVEL 2'], [20,20])
 # Universal Button
 backtoHomeButton = Button([50,700], [0,1,1], 3, 1, [[0, 35, 0, 35, 35, 165, 35,165, 165, 165],[25, 50, 25, 0, 50, 50,0,0, 50, 0]], [5,5])
 
-
 player = Jet([100,100], JET, JET_COLOR, 2)
+# enemy = Jet([500,500], ENEMY_JET, JET_COLOR, 2)
+
 player_healthbar = HealthBar(100,[50,10], [5,760])
 glutDisplayFunc(showScreen)
 animate(5)
 glutKeyboardFunc(keyboard)
 glutMouseFunc(mouse)
+# glutSpecialFunc(specialKeyListener)
+
 
 glutMainLoop()

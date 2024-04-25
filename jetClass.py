@@ -25,9 +25,7 @@ class Jet:
                     c = self.colorPalette[self.drawArr[i][j]]
                     glColor3f(c[0],c[1],c[2])
                     glVertex2f(x_,y_)
-        
         glEnd()
-        
         if boundary:
             self.drawBoundaryBox()
             
