@@ -24,11 +24,23 @@ def specialKeyListener(key, x, y):
         player.pos[0] = (player.pos[0] - 5) % 800
 
 def keyboard(key, x, y):
+    global gamepage, pausepage, homepage, levelpage, gameoverpage, animation_loop, delay
     
-    global angle
-    if key == b"q":
-        angle = (angle + 10) % 360
+    if gamepage:
+        if not delay[0]:
+            if key == b'\x1b':
+                pausepage = True
+                gamepage = False
+                delay = [True, (animation_loop-90)%100]
+    
+    if pausepage:
+        if not delay[0]:
+            if key == b'\x1b':
+                pausepage = False
+                gamepage = True
+                delay = [True, (animation_loop-90)%100]
 
+            
 def mouse(button, state, x, y):
     y = 800 - y
     global homepage, levelpage, gamepage, pausepage, gameoverpage, level, delay,animation_loop
@@ -54,6 +66,18 @@ def mouse(button, state, x, y):
             if backtoHomeButton.pressed(x, y):
                 levelpage = False
                 homepage = True
+    
+    elif pausepage:
+        if not delay[0]:
+            if restartButton.pressed(x, y):
+                pausepage = False
+                gamepage = True
+            if resumeButton.pressed(x, y):
+                pausepage = False
+                gamepage = True
+            if backHomeButton.pressed(x, y):
+                pausepage = False
+                homepage = True
 def BACKGROUND():
     for i in range(50):
         DRAWMATRIX.draw(starpos[i], STARBIG, STARCOLOR, 1)
@@ -68,40 +92,32 @@ def BACKGROUND():
         smallStar(starpos3[i], [0.4,0.098,0.819], 1)
         
 def HOMEPAGE():
-    Text.draw("AFTERBURN", [178, 650], [1,1,1], 7)
-    Text.draw("ASSAULT", [228, 580], [1,1,1], 7)
+    Text.draw("AFTERBURN", [178, 650], [0.858,0.505,0.482], 7)
+    Text.draw("ASSAULT", [228, 580], [0.858,0.505,0.482], 7)
     play_button.draw(True)
     quitButton.draw(True)
     
 def LEVELPAGE():
     global animation_loop
-    Text.draw("CHOOSE LEVEL", [190, 580], [1,1,0], 5)
+    Text.draw("CHOOSE LEVEL", [190, 580], [0.858,0.505,0.482], 5)
     level1_button.draw(True)
     level2_button.draw(True)
     backtoHomeButton.draw()
-    Text.draw("HOME", [100, 714], [0,1,1], 4)
+    Text.draw("HOME", [100, 714], [0.03,0.64,0.74], 4)
     
 def LEVEL_ONE():
-    global enemy1, enemy2, enemy3
-    enemy1 = Jet([500,400], ENEMY_JET, JET_COLOR, 2)
-    enemy2 = Jet([400,300], ENEMY_JET, JET_COLOR, 2)
-    enemy3 = Jet([300,200], ENEMY_JET, JET_COLOR, 2)
+    pass
  
     
 def GAMEPAGE():
     global animation_loop, level
     player.draw()
-    if level == 1:
-        LEVEL_ONE()
-        enemy1.draw(True)
-        enemy2.draw(True)
-        enemy3.draw(True)
     player_healthbar.draw(player.health)
-    if level == 1:
-        Text.draw("LEVEL 1", [100, 700], [1,1,1], 5)
-    elif level == 2:
-        Text.draw("LEVEL 2", [100, 700], [1,1,1], 5)
-        
+    
+def PAUSEPAGE():
+    restartButton.draw(True)
+    resumeButton.draw(True)
+    backHomeButton.draw(True)  
 
 def backgroundAnimation():
     for i in range(50):
@@ -114,7 +130,7 @@ def backgroundAnimation():
         i[0][1] = (i[0][1] - i[2]*1.5) 
         i[0][0] = (i[0][0] - i[2]) 
         if i[0][1] < -17*i[2] or i[0][0] < -17*i[2]:
-            i[0][0] = random.randint(0,800)
+            i[0][0] = random.randint(0,1200)
             i[0][1] = 800
             i[2] = random.randint(1,3)
         
@@ -144,7 +160,7 @@ def showScreen():
     elif gamepage:
         GAMEPAGE()
     elif pausepage:
-        pass
+        PAUSEPAGE()
     elif gameoverpage:
         pass
     
@@ -165,7 +181,8 @@ def animate(value):
     global animation_loop, delay
     animation_loop = (animation_loop + 1) % 100
     
-    backgroundAnimation()
+    if not pausepage:
+        backgroundAnimation()
 
     
     
@@ -213,14 +230,19 @@ gameoverpage = False
 level = 1
 # ===================
 # Button Logic - Homepage
-play_button = Button([324,400], [0,1,0], 4, 3, ['PLAY'], [20,20])
-quitButton = Button([324,300], [1,0,0], 4, 3, ['EXIT'], [20,20])
+play_button = Button([324,400], [0.58,0.749,0.56], 4, 3, ['PLAY'], [20,20])
+quitButton = Button([324,300], [0.788,0.392,0.501], 4, 3, ['EXIT'], [20,20])
 
 # Button Logic - Levelpage
-level1_button = Button([282,400], [0,1,0], 4, 3, ['LEVEL 1'], [20,20])
-level2_button = Button([282,300], [0,1,0], 4, 3, ['LEVEL 2'], [20,20])
+level1_button = Button([282,400], [0.58,0.749,0.56], 4, 3, ['LEVEL 1'], [20,20])
+level2_button = Button([282,300], [0.58,0.749,0.56], 4, 3, ['LEVEL 2'], [20,20])
 # Universal Button
-backtoHomeButton = Button([50,700], [0,1,1], 3, 1, [[0, 35, 0, 35, 35, 165, 35,165, 165, 165],[25, 50, 25, 0, 50, 50,0,0, 50, 0]], [5,5])
+backtoHomeButton = Button([50,700], [0.03,0.64,0.74], 3, 1, [[0, 35, 0, 35, 35, 165, 35,165, 165, 165],[25, 50, 25, 0, 50, 50,0,0, 50, 0]], [5,5])
+# pause menu button
+restartButton = Button([282,300], [0.58,0.749,0.56], 4, 3, ['RESTART'], [20,20])
+resumeButton = Button([282,400], [0.58,0.749,0.56], 4, 3, ['RESUME'], [34,20])
+backHomeButton = Button([282,200], [0.58,0.749,0.56], 4, 3, ['HOME'], [62,20])
+
 
 player = Jet([100,100], JET, JET_COLOR, 2)
 # enemy = Jet([500,500], ENEMY_JET, JET_COLOR, 2)
