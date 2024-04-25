@@ -9,6 +9,7 @@ from midpointCircle import drawCircle
 from midpointLine import drawLine
 from jet.jet import JET, JET_COLOR
 from jetClass import Jet
+from blinkblink import *
 
 from button import Button, Text
 from hpbar import HealthBar
@@ -45,6 +46,9 @@ def mouse(button, state, x, y):
             if backtoHomeButton.pressed(x, y):
                 levelpage = False
                 homepage = True
+def BACKGROUND():
+    for i in starpos:
+        DRAWMATRIX.draw(i, STARBIG, STARCOLOR, 1)
         
 def HOMEPAGE():
     Text.draw("AFTERBURN", [178, 650], [1,1,1], 7)
@@ -58,9 +62,6 @@ def LEVELPAGE():
     level2_button.draw(True)
     backtoHomeButton.draw()
     Text.draw("HOME", [100, 714], [0,1,1], 4)
-    
-    
-    
     
 def GAMEPAGE():
     global animation_loop, level
@@ -82,10 +83,13 @@ def iterate():
 def showScreen():
     global animation_loop, homepage, levelpage, gamepage, pausepage, gameoverpage
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-    glClearColor(0, 0, 0, 1.0)
+    glEnable(GL_BLEND)
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+    glClearColor(0.074, 0.0627, 0.16, 1.0)
     glLoadIdentity()
     iterate()  
     # draw  
+    BACKGROUND()
     
     if homepage:
         HOMEPAGE()
@@ -98,8 +102,6 @@ def showScreen():
     elif gameoverpage:
         pass
     
-    
-    
     glutSwapBuffers()
 
 def game():
@@ -108,6 +110,7 @@ def game():
         player.health -= 1
         if player.health <= 0:
             player.health = 100
+            
 def animate(value):
     global animation_loop, delay
     animation_loop = (animation_loop + 1) % 100
@@ -127,6 +130,10 @@ glutInitWindowSize(800, 800)
 glutInitWindowPosition(0, 0)
 wind = glutCreateWindow(b"Afterburn Assault")
 animation_loop = 0
+# background
+starpos = []
+for i in range(100):
+    starpos.append([random.randint(0,800), random.randint(0,800)])
 # Page Logic
 delay = [False, 0]
 homepage = True
