@@ -60,5 +60,28 @@ class DRAWMATRIX:
                     glVertex2f(x_,y_)
         
         glEnd()
-        
+
+def drawPoints(pos, color, px = 1):
+    glPointSize(px)
+    glBegin(GL_POINTS)
+    glColor3f(color[0],color[1],color[2])
+    glVertex2f(pos[0],pos[1])
+    glEnd()
+
+def drawMeteor(pos, color,px):
+    x = pos[0]
+    y = pos[1]
+    drawPoints([x,y], color, 3*px)
+    drawPoints([x+1.5*px,y+1.5*px], color, 2*px)
+    drawPoints([x+3*px,y+3*px], color, 1*px)
+    drawPoints([x+4*px,y+4*px], color, 1*px)
+    drawPoints([x+5*px,y+5*px], color, 1*px)
+    drawPoints([x+6*px,y+6*px], color, 1*px)
+    drawPoints([x+8*px,y+8*px], color, 1*px)
+    drawPoints([x+9*px,y+9*px], color, 1*px)
+    drawPoints([x+11*px,y+11*px], color, 1*px)
+    drawPoints([x+13*px,y+13*px], color, 1*px)
+    drawPoints([x+17*px,y+17*px], color, 1*px)
+    
+    
         

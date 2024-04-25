@@ -50,6 +50,11 @@ def BACKGROUND():
     for i in range(50):
         DRAWMATRIX.draw(starpos[i], STARBIG, STARCOLOR, 1)
         DRAWMATRIX.draw(starpos2[i], STARBIG, STARCOLOR2, 1)
+    
+    for i in meteor:
+        if i[0][0] < 800:
+            drawMeteor(i[0], i[1], i[2])
+    
         
     for i in range(800):
         smallStar(starpos3[i], [0.4,0.098,0.819], 1)
@@ -83,6 +88,14 @@ def backgroundAnimation():
         starpos2[i][1] = (starpos2[i][1] - 3) % 800
     for i in range(800):
         starpos3[i][1] = (starpos3[i][1] - 1) % 800
+        
+    for i in meteor:
+        i[0][1] = (i[0][1] - i[2]*1.5) 
+        i[0][0] = (i[0][0] - i[2]) 
+        if i[0][1] < -17*i[2] or i[0][0] < -17*i[2]:
+            i[0][0] = random.randint(0,800)
+            i[0][1] = 800
+            i[2] = random.randint(1,3)
         
 def iterate():
     glViewport(0, 0, 800, 800)
@@ -149,11 +162,19 @@ animation_loop = 0
 starpos = []
 starpos2 = []
 starpos3 = []
+meteor = []
 for i in range(50):
     starpos.append([random.randint(0,800), random.randint(0,800)])
     starpos2.append([random.randint(0,800), random.randint(0,800)])
 for i in range(800):
     starpos3.append([random.randint(0,800), random.randint(0,800)])
+
+meteor.append([[random.randint(0,800), 800], [0.4,0.725,0.983], random.randint(1,3)])
+meteor.append([[random.randint(0,800), 800], [0.4,0.725,0.983], random.randint(1,3)])
+meteor.append([[random.randint(0,800), 800], [0.4,0.725,0.983], random.randint(1,3)])
+meteor.append([[random.randint(0,800), 800], [0.4,0.725,0.983], random.randint(1,3)])
+meteor.append([[random.randint(0,800), 800], [0.4,0.725,0.983], random.randint(1,3)])
+meteor.append([[random.randint(0,800), 800], [0.4,0.725,0.983], random.randint(1,3)])
 # Page Logic
 delay = [False, 0]
 homepage = True
