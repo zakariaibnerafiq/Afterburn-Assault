@@ -3,6 +3,8 @@ from OpenGL.GLUT import *
 from OpenGL.GLU import *
 import numpy as np
 from midpointLine import drawLine
+from jet.jet import *
+from blinkblink import *
 
 class Jet:
     def __init__(self, pos, drawArr, colorPalette, px = 1):
@@ -42,6 +44,9 @@ class Jet:
     
     def __str__(self) -> str:
         return f"Jet at {self.pos}\n"
+
+def jetThrust(pos, px = 1):
+    DRAWMATRIX.draw(pos, JET_THRUSTER, THRUSTER, px)
 
 if __name__ == '__main__':
     print("Hello World")

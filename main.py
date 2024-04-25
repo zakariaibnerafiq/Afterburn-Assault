@@ -8,7 +8,7 @@ import random
 from midpointCircle import drawCircle
 from midpointLine import drawLine
 from jet.jet import *
-from jetClass import Jet
+from jetClass import Jet, jetThrust
 from blinkblink import *
 
 from button import Button, Text
@@ -32,6 +32,13 @@ def keyboard(key, x, y):
                 pausepage = True
                 gamepage = False
                 delay = [True, (animation_loop-90)%100]
+        
+        if key == b'a':
+            if player.pos[0] > 0:
+                player.pos[0] = (player.pos[0] - 10)
+        if key == b'd':
+            if player.pos[0] < 800- player.size[0]:
+                player.pos[0] = (player.pos[0] + 10)
     
     if pausepage:
         if not delay[0]:
@@ -113,6 +120,7 @@ def GAMEPAGE():
     global animation_loop, level
     player.draw()
     player_healthbar.draw(player.health)
+    jetThrust([player.pos[0]+player.size[0]/2-8, player.pos[1]-15], 2)
     
 def PAUSEPAGE():
     restartButton.draw(True)
@@ -121,10 +129,10 @@ def PAUSEPAGE():
 
 def backgroundAnimation():
     for i in range(50):
-        starpos[i][1] = (starpos[i][1] - 2) % 800
-        starpos2[i][1] = (starpos2[i][1] - 3) % 800
+        starpos[i][1] = (starpos[i][1] - 1) % 800
+        starpos2[i][1] = (starpos2[i][1] - 1.5) % 800
     for i in range(800):
-        starpos3[i][1] = (starpos3[i][1] - 1) % 800
+        starpos3[i][1] = (starpos3[i][1] - 0.5) % 800
         
     for i in meteor:
         i[0][1] = (i[0][1] - i[2]*1.5) 
@@ -168,6 +176,8 @@ def showScreen():
 
 def game():
     glutSpecialFunc(specialKeyListener)
+    
+    
     
     global animation_loop
     if animation_loop % 2 == 0:
@@ -239,12 +249,12 @@ level2_button = Button([282,300], [0.58,0.749,0.56], 4, 3, ['LEVEL 2'], [20,20])
 # Universal Button
 backtoHomeButton = Button([50,700], [0.03,0.64,0.74], 3, 1, [[0, 35, 0, 35, 35, 165, 35,165, 165, 165],[25, 50, 25, 0, 50, 50,0,0, 50, 0]], [5,5])
 # pause menu button
-restartButton = Button([282,300], [0.58,0.749,0.56], 4, 3, ['RESTART'], [20,20])
-resumeButton = Button([282,400], [0.58,0.749,0.56], 4, 3, ['RESUME'], [34,20])
-backHomeButton = Button([282,200], [0.58,0.749,0.56], 4, 3, ['HOME'], [62,20])
+restartButton = Button([282,370], [0.58,0.749,0.56], 4, 3, ['RESTART'], [20,20])
+resumeButton = Button([282,470], [0.58,0.749,0.56], 4, 3, ['RESUME'], [34,20])
+backHomeButton = Button([282,270], [0.58,0.749,0.56], 4, 3, ['HOME'], [62,20])
 
 
-player = Jet([100,100], JET, JET_COLOR, 2)
+player = Jet([100,70], JET, JET_COLOR, 2)
 # enemy = Jet([500,500], ENEMY_JET, JET_COLOR, 2)
 
 player_healthbar = HealthBar(100,[50,10], [5,760])
