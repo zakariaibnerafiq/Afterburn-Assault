@@ -5,7 +5,6 @@ import random
 
 
 # importing Assets
-from components import *
 from midpointCircle import drawCircle
 from midpointLine import drawLine
 from jet.jet import JET, JET_COLOR
@@ -150,7 +149,6 @@ backtoHomeButton = Button([50,700], [0,1,1], 3, 1, [[0, 35, 0, 35, 35, 165, 35,1
 
 
 player = Jet([100,100], JET, JET_COLOR, 2)
-num = Number()
 player_healthbar = HealthBar(100,[50,10], [5,760])
 glutDisplayFunc(showScreen)
 animate(5)
