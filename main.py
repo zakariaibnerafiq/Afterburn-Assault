@@ -85,6 +85,7 @@ def mouse(button, state, x, y):
             if backHomeButton.pressed(x, y):
                 pausepage = False
                 homepage = True
+                delay = [True, (animation_loop-90)%100]
 def BACKGROUND():
     for i in range(50):
         DRAWMATRIX.draw(starpos[i], STARBIG, STARCOLOR, 1)
