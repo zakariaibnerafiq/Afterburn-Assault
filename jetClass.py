@@ -36,7 +36,7 @@ class Jet:
     
     def activateShield(self):
         self.shieldStatus = True
-        self.shield = self.inithp/4 
+        self.shield = int(self.inithp/4 )
     
     def damageShield(self, damage):
         self.shield -= damage
@@ -46,6 +46,8 @@ class Jet:
     def heal(self, health):
         if self.health + health > self.inithp:
             self.health = self.inithp
+        else:
+            self.health += health
             
     def drawBoundaryBox(self):
         x1 = self.pos[0]

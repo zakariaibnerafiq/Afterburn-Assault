@@ -13,7 +13,7 @@ from button import Button, Text
 from hpbar import HealthBar
 # ===============Keyboard Listener================
 def keyboard(key, x, y):
-    global gamepage, pausepage, homepage, levelpage, gameoverpage, animation_loop, delay, bullet_player
+    global gamepage, pausepage, homepage, levelpage, gameoverpage, animation_loop, delay, bullet_player, ability1_state, ability2_state, timer_loop, ability1_counter, ability2_counter
     if gamepage:
         if not delay[0]:
             if key == b'\x1b':
@@ -31,6 +31,18 @@ def keyboard(key, x, y):
         if key == b' ':
             bullet = Bullet([player.pos[0]+player.size[0]/2, player.pos[1]+player.size[1]], 10, [0,10],8)
             bullet_player.append(bullet)
+            
+        if not ability1_state[0]:
+            if key == b'1':
+                ability1_state = [True, (timer_loop-80)%100]
+                ability1_counter = 20
+                player.activateShield()
+        if not ability2_state[0]:
+            if key == b'2':
+                ability2_state = [True, (timer_loop-50)%100]
+                ability2_counter = 50
+                player.heal(200)
+                
             
     if pausepage:
         if not delay[0]:
@@ -138,14 +150,21 @@ def LEVELPAGE():
     Text.draw("HOME", [100, 714], [0.03,0.64,0.74], 4)
     
 def GAMEPAGE():
-    global animation_loop, level
+    global animation_loop, level, ability1_state, ability2_state, ability2_counter, ability1_counter
     
-    Text.draw("SCORE "+str(score), [5, 740], [0.858,0.505,0.482], 1)
+    Text.draw("SCORE "+str(score), [5, 720], [0.858,0.505,0.482], 1)
     if player.health >= 0:
-        Text.draw("HP "+str(player.health), [5, 780], [0.858,0.505,0.482], 1)
-    
+        Text.draw("HP "+str(player.health), [5, 770], [0.858,0.505,0.482], 1)
+    if not ability1_state[0]:
+        Text.draw("PRESS 1 FOR SHIELD", [5, 640], [0.858,0.505,0.482], 1)
+    else:
+        Text.draw("SHIELD AVAILABLE IN "+str(ability1_counter), [5, 640], [0.858,0.505,0.482], 1)
+    if not ability2_state[0]:
+        Text.draw("PRESS 2 TO HEAL", [5, 620], [0.858,0.505,0.482], 1)
+    else:
+        Text.draw("HEAL AVAILABLE IN "+str(ability2_counter), [5, 620], [0.858,0.505,0.482], 1)
     if player.shieldStatus:
-        Text.draw("SHIELD "+str(player.shield), [5, 780], [0.858,0.505,0.482], 1)
+        Text.draw("SHIELD "+str(player.shield), [5, 740], [0.858,0.505,0.482], 1)
         player_shield.draw(player.shield)
         
     player.draw()
@@ -314,10 +333,21 @@ def game():
     playerfunc()
     
 def timeloop():
-    global animation_loop, delay, gameDelay, timer_loop
+    global animation_loop, delay, gameDelay, timer_loop, ability1_state, ability2_state, ability2_counter, ability1_counter
     animation_loop = (animation_loop + 1) % 100
-    if animation_loop % 10 == 0:
+    if animation_loop % 20 == 0:
         timer_loop = (timer_loop + 1) % 100
+        if ability1_state[0]:
+        
+            ability1_counter -= 1
+            if ability1_state[1] == timer_loop:
+                ability1_state = [False, 0]
+            
+        if ability2_state[0]:
+        
+            ability2_counter -= 1
+            if ability2_state[1] == timer_loop:
+                ability2_state = [False, 0]
         
     if delay[0]:
         if delay[1] == animation_loop:
@@ -325,6 +355,8 @@ def timeloop():
     if gameDelay[0]:
         if gameDelay[1] == animation_loop:
             gameDelay = [False, 0]
+            
+    
  
 def animate(value):
     global animation_loop, delay, gameDelay
@@ -391,10 +423,9 @@ restartButton = Button([282,370], [0.58,0.749,0.56], 4, 3, ['RESTART'], [20,20])
 resumeButton = Button([282,470], [0.58,0.749,0.56], 4, 3, ['RESUME'], [34,20])
 backHomeButton = Button([282,270], [0.58,0.749,0.56], 4, 3, ['HOME'], [62,20])
 # Abilites
-ability1 = [True, 0]
-ability2 = [True, 0]
 
-
+ability1_counter = 0
+ability2_counter = 0
 ability1_state = [False, 0]
 ability2_state = [False, 0]
 
