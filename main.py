@@ -90,14 +90,27 @@ def mouse(button, state, x, y):
                 pausepage = False
                 homepage = True
                 delay = [True, (animation_loop-90)%100]
+    
+    elif gameoverpage:
+        if not delay[0]:
+            if restartButton.pressed(x, y):
+                resetGame()
+                gameoverpage = False
+                gamepage = True
+            if backHomeButton.pressed(x, y):
+                resetGame()
+                gameoverpage = False
+                homepage = True
+                delay = [True, (animation_loop-90)%100]
 
 def resetGame():
-    global bullet_player, player, enemy, enemy_bullet
+    global bullet_player, player, enemy, enemy_bullet, score
     bullet_player = []
     enemy = []
     enemy_bullet = []
-    player.health = 1000
+    player.health = 100
     player_healthbar.health = player.health
+    score = 0
 
 def BACKGROUND():
     for i in range(50):
@@ -149,7 +162,17 @@ def PAUSEPAGE():
     restartButton.draw(True)
     resumeButton.draw(True)
     backHomeButton.draw(True)  
-        
+
+def GAMEOVERPAGE():
+    global score
+    
+    x = (800-len(str(score))*4*7)/2
+    Text.draw("GAME OVER", [180, 600], [0.858,0.505,0.482], 7)
+    Text.draw("YOUR SCORE", [260, 530], [0.858,0.505,0.482], 4)
+    Text.draw(str(score), [x, 480], [0.858,0.505,0.482], 4)
+    restartButton.draw(True)
+    backHomeButton.draw(True)
+      
 def iterate():
     glViewport(0, 0, 800, 800)
     glMatrixMode(GL_PROJECTION)
@@ -178,7 +201,7 @@ def showScreen():
     elif pausepage:
         PAUSEPAGE()
     elif gameoverpage:
-        pass
+        GAMEOVERPAGE()
     
     glutSwapBuffers()
     
@@ -228,6 +251,7 @@ def enemyfunc():
     enemyBulletLogic()
     
 def playerBulletLogic():
+    global score
     for i in bullet_player:
         i.move()
         if i.pos[1] > 800:
@@ -235,18 +259,29 @@ def playerBulletLogic():
         else:
             for j in enemy:
                 if i.collision(j):
+                    score += i.damage
                     j.health -= i.damage
                     bullet_player.remove(i)
                     if j.health <= 0:
                         enemy.remove(j)
                         break
+
+def playerfunc():
+    global gamepage, gameoverpage
+    
+    if player.health <= 0:
+        gamepage = False
+        gameoverpage = True
+        
+    playerBulletLogic()
+    
 def game():
     glutSpecialFunc(specialKeyListener)
     global bullet_player, player, animation_loop
     
     enemyfunc()
     
-    playerBulletLogic()
+    playerfunc()
         
     
             
@@ -316,10 +351,11 @@ resumeButton = Button([282,470], [0.58,0.749,0.56], 4, 3, ['RESUME'], [34,20])
 backHomeButton = Button([282,270], [0.58,0.749,0.56], 4, 3, ['HOME'], [62,20])
 
 # gamepage variables
+score = 0
 bullet_player = []
 enemy = []
 enemy_bullet = []
-player = Jet([100,70], JET, JET_COLOR,1000, 2)
+player = Jet([100,70], JET, JET_COLOR,100, 2)
 # enemy = Jet([500,500], ENEMY_JET, JET_COLOR, 2)
 player_healthbar = HealthBar(player.health,[100,10], [5,760])
 
@@ -328,6 +364,5 @@ animate(5)
 glutKeyboardFunc(keyboard)
 glutMouseFunc(mouse)
 # glutSpecialFunc(specialKeyListener)
-
 
 glutMainLoop()
