@@ -14,15 +14,6 @@ from bullet import *
 from button import Button, Text
 from hpbar import HealthBar
 # ===============Keyboard Listener================
-
-def specialKeyListener(key, x, y):
-    global cor2, bxx
-    glutPostRedisplay()
-    if key==GLUT_KEY_RIGHT:
-        player.pos[0] = (player.pos[0] + 5) % 800
-    if key==GLUT_KEY_LEFT:
-        player.pos[0] = (player.pos[0] - 5) % 800
-
 def keyboard(key, x, y):
     global gamepage, pausepage, homepage, levelpage, gameoverpage, animation_loop, delay, bullet_player
     
@@ -276,15 +267,11 @@ def playerfunc():
     playerBulletLogic()
     
 def game():
-    glutSpecialFunc(specialKeyListener)
     global bullet_player, player, animation_loop
     
     enemyfunc()
-    
     playerfunc()
         
-    
-            
 def animate(value):
     global animation_loop, delay
     animation_loop = (animation_loop + 1) % 100
