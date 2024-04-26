@@ -13,7 +13,10 @@ class Jet:
         self.colorPalette = colorPalette
         self.px = px
         self.size = [len(drawArr[0])*px, len(drawArr)*px]
+        self.inithp = health
         self.health = health
+        self.shieldStatus = False
+        self.shield = self.health/4
     
     def draw(self, boundary = False):
         x = len(self.drawArr)
@@ -30,8 +33,20 @@ class Jet:
         glEnd()
         if boundary:
             self.drawBoundaryBox()
+    
+    def activateShield(self):
+        self.shieldStatus = True
+        self.shield = self.inithp/4 
+    
+    def damageShield(self, damage):
+        self.shield -= damage
+        if self.shield <= 0:
+            self.shieldStatus = False
             
-        
+    def heal(self, health):
+        if self.health + health > self.inithp:
+            self.health = self.inithp
+            
     def drawBoundaryBox(self):
         x1 = self.pos[0]
         y1 = self.pos[1]

@@ -100,9 +100,11 @@ def mouse(button, state, x, y):
                 delay = [True, (animation_loop-90)%100]
 
 def resetGame():
-    global bullet_player, player, enemy, enemy_bullet, score
+    global bullet_player, player, enemy, enemy_bullet, score, enemy_healthbar, wave
     bullet_player = []
     enemy = []
+    wave = 0
+    enemy_healthbar = []
     enemy_bullet = []
     player.health = 1000
     player_healthbar.health = player.health
@@ -138,9 +140,14 @@ def LEVELPAGE():
 def GAMEPAGE():
     global animation_loop, level
     
+    Text.draw("SCORE "+str(score), [5, 740], [0.858,0.505,0.482], 1)
     if player.health >= 0:
-        Text.draw("HP "+str(player.health), [10, 770], [0.858,0.505,0.482], 1)
+        Text.draw("HP "+str(player.health), [5, 780], [0.858,0.505,0.482], 1)
     
+    if player.shieldStatus:
+        Text.draw("SHIELD "+str(player.shield), [5, 780], [0.858,0.505,0.482], 1)
+        player_shield.draw(player.shield)
+        
     player.draw()
     player_healthbar.draw(player.health)
     jetThrust([player.pos[0]+player.size[0]/2-8, player.pos[1]-15], 2)
@@ -217,13 +224,18 @@ def backgroundAnimation():
             i[0][1] = 800
             i[2] = random.randint(1,3)
 
-def generateEnemyBullet(i):  
+def generateEnemyBullet(i): 
+    global level 
     dx, dy = speedCheck(10,  player.pos[0], player.pos[1], i.pos[0], i.pos[1])
     if player.pos[0] < i.pos[0]:
         dx = -dx
     if dy > 0:
         dy = -dy
-    enemy_bullet.append(Bullet([i.pos[0]+i.size[0]/2, i.pos[1]], 10, [dx,dy],8))     
+    
+    damage = 10
+    if level == 2:
+        damage = 15
+    enemy_bullet.append(Bullet([i.pos[0]+i.size[0]/2, i.pos[1]], damage, [dx,dy],8))     
 
 def enemyBulletLogic():
     for i in enemy_bullet:
@@ -231,21 +243,39 @@ def enemyBulletLogic():
         if i.pos[1] < 0:
             enemy_bullet.remove(i)
         elif i.collision(player):
-            player.health -= i.damage
+            if player.shieldStatus:
+                player.damageShield(i.damage)
+            
+            else:
+                player.health -= i.damage
+        
             enemy_bullet.remove(i)
             
-def enemyfunc():
-    global animation_loop, enemy, enemy_bullet, enemy_healthbar, score
-    if enemy == []:
-        enemy.append(Jet([180, 700], ENEMY_JET, JET_COLOR,100, 2))
-        enemy.append(Jet([380, 650], ENEMY_JET, JET_COLOR,400, 3))
-        enemy.append(Jet([600, 700], ENEMY_JET, JET_COLOR,100, 2))
-        enemy_healthbar.append(HealthBar(enemy[0].health,[enemy[0].size[0],3], [180,700+enemy[0].size[1]+5]))
-        enemy_healthbar.append(HealthBar(enemy[1].health,[enemy[1].size[0],3], [380,650+enemy[1].size[1]+5]))
-        enemy_healthbar.append(HealthBar(enemy[2].health,[enemy[2].size[0],3], [600,700+enemy[2].size[1]+5]))
+def generateEnemy():   
     
+    enemy.append(Jet([180, random.randint(800, 1000)], ENEMY_JET, JET_COLOR2,100, 2))
+    enemy.append(Jet([380, random.randint(800, 1000)], ENEMY_JET, JET_COLOR2,400, 3))
+    enemy.append(Jet([600, random.randint(800, 1000)], ENEMY_JET, JET_COLOR2,100, 2))
+    enemy_healthbar.append(HealthBar(enemy[0].health,[enemy[0].size[0],3], [180,enemy[0].pos[1]+enemy[0].size[1]+5]))
+    enemy_healthbar.append(HealthBar(enemy[1].health,[enemy[1].size[0],3], [380,enemy[1].pos[1]+enemy[1].size[1]+5]))
+    enemy_healthbar.append(HealthBar(enemy[2].health,[enemy[2].size[0],3], [600,enemy[2].pos[1]+enemy[2].size[1]+5]))   
+
+def moveEnemey():
+    for i in range(len(enemy)):
+        if enemy[i].pos[1] > 600:
+            enemy[i].pos[1] = enemy[i].pos[1] - 2
+            enemy_healthbar[i].pos[1] = enemy_healthbar[i].pos[1] - 2
+        
+def enemyfunc():
+    global animation_loop, enemy, enemy_bullet, enemy_healthbar, score, wave
+    
+    if enemy == []:
+        wave  = wave + 1 % 20
+        generateEnemy()
+    else:
+        moveEnemey()
     for i in enemy:
-        if animation_loop>= 20 and animation_loop <= 40:
+        if animation_loop>= 20 and animation_loop <= 40+wave*2:
             if animation_loop % 5 == 0:
                 generateEnemyBullet(i)
     
@@ -260,12 +290,12 @@ def playerBulletLogic():
         else:
             for j in enemy:
                 if i.collision(j):
+                    score += i.damage
                     j.health -= i.damage
                     bullet_player.remove(i)
                     if j.health <= 0:
                         enemy_healthbar.remove(enemy_healthbar[enemy.index(j)])
                         enemy.remove(j)
-                        score += 10
                         break
 
 def playerfunc():
@@ -337,6 +367,7 @@ meteor.append([[random.randint(0,800), 800], [0.4,0.725,0.983], random.randint(1
 meteor.append([[random.randint(0,800), 800], [0.4,0.725,0.983], random.randint(1,3)])
 # Page Logic
 delay = [False, 0]
+wave = 0
 homepage = True
 levelpage = False
 gamepage = False
@@ -344,6 +375,7 @@ pausepage = False
 gameoverpage = False
 # Level Logic
 level = 1
+
 # ===================
 # Button Logic - Homepage
 play_button = Button([324,400], [0.58,0.749,0.56], 4, 3, ['PLAY'], [20,20])
@@ -361,11 +393,11 @@ backHomeButton = Button([282,270], [0.58,0.749,0.56], 4, 3, ['HOME'], [62,20])
 # Abilites
 ability1 = [True, 0]
 ability2 = [True, 0]
-ability3 = [True, 0]
+
 
 ability1_state = [False, 0]
 ability2_state = [False, 0]
-ability3_state = [False, 0]
+
 
 # gamepage variables
 gameDelay =[False, 0]
@@ -377,6 +409,7 @@ enemy_bullet = []
 player = Jet([100,70], JET, JET_COLOR,1000, 2)
 # enemy = Jet([500,500], ENEMY_JET, JET_COLOR, 2)
 player_healthbar = HealthBar(player.health,[100,10], [5,760])
+player_shield = HealthBar(player.shield,[70,10], [5,730])
 
 glutDisplayFunc(showScreen)
 animate(5)
