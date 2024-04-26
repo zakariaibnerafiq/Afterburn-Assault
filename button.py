@@ -56,6 +56,7 @@ class Button:
             x_, y_ = self.arr[0][i], self.arr[1][i]
             x__, y__ = self.arr[0][i+1], self.arr[1][i+1]
             drawLine(x_+x,y_+y, x__+x,y__+y, self.color, self.px)
+    
     def textDraw(self):
         # 01234
         glColor3f(self.color[0], self.color[1], self.color[2])

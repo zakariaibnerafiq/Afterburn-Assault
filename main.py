@@ -2,8 +2,6 @@ from OpenGL.GL import *
 from OpenGL.GLUT import *
 from OpenGL.GLU import *
 import random
-
-
 # importing Assets
 from midpointCircle import drawCircle
 from midpointLine import drawLine
@@ -16,7 +14,6 @@ from hpbar import HealthBar
 # ===============Keyboard Listener================
 def keyboard(key, x, y):
     global gamepage, pausepage, homepage, levelpage, gameoverpage, animation_loop, delay, bullet_player
-    
     if gamepage:
         if not delay[0]:
             if key == b'\x1b':
@@ -44,7 +41,7 @@ def keyboard(key, x, y):
           
 def mouse(button, state, x, y):
     y = 800 - y
-    global homepage, levelpage, gamepage, pausepage, gameoverpage, level, delay,animation_loop
+    global homepage, levelpage, gamepage, pausepage, gameoverpage, level, delay,animation_loop, gameDelay
     
     if homepage:
         if not delay[0]:
@@ -57,10 +54,12 @@ def mouse(button, state, x, y):
     elif levelpage:
         if not delay[0]:
             if level1_button.pressed(x, y):
+                gameDelay = [True, (animation_loop-50)%100]
                 level = 1
                 levelpage = False
                 gamepage = True
             if level2_button.pressed(x, y):
+                gameDelay = [True, (animation_loop-50)%100]
                 level = 2
                 levelpage = False
                 gamepage = True
@@ -71,6 +70,7 @@ def mouse(button, state, x, y):
     elif pausepage:
         if not delay[0]:
             if restartButton.pressed(x, y):
+                gameDelay = [True, (animation_loop-50)%100]
                 resetGame()
                 pausepage = False
                 gamepage = True
@@ -78,10 +78,15 @@ def mouse(button, state, x, y):
                 pausepage = False
                 gamepage = True
             if backHomeButton.pressed(x, y):
+                resetGame()
                 pausepage = False
                 homepage = True
                 delay = [True, (animation_loop-90)%100]
-    
+    elif gamepage:
+        if button == GLUT_LEFT_BUTTON and state == GLUT_DOWN:
+            bullet = Bullet([player.pos[0]+player.size[0]/2, player.pos[1]+player.size[1]], 10, [0,10],8)
+            bullet_player.append(bullet)
+            
     elif gameoverpage:
         if not delay[0]:
             if restartButton.pressed(x, y):
@@ -99,7 +104,7 @@ def resetGame():
     bullet_player = []
     enemy = []
     enemy_bullet = []
-    player.health = 100
+    player.health = 1000
     player_healthbar.health = player.health
     score = 0
 
@@ -140,8 +145,9 @@ def GAMEPAGE():
     player_healthbar.draw(player.health)
     jetThrust([player.pos[0]+player.size[0]/2-8, player.pos[1]-15], 2)
     
-    for i in enemy:
-        i.draw()
+    for i in range(len(enemy)):
+        enemy[i].draw()
+        enemy_healthbar[i].draw(enemy[i].health)
         
     for i in bullet_player:
         i.draw()
@@ -229,15 +235,19 @@ def enemyBulletLogic():
             enemy_bullet.remove(i)
             
 def enemyfunc():
-    global animation_loop, enemy, enemy_bullet
+    global animation_loop, enemy, enemy_bullet, enemy_healthbar, score
     if enemy == []:
         enemy.append(Jet([180, 700], ENEMY_JET, JET_COLOR,100, 2))
-        enemy.append(Jet([380, 650], ENEMY_JET, JET_COLOR,100, 2))
+        enemy.append(Jet([380, 650], ENEMY_JET, JET_COLOR,400, 3))
         enemy.append(Jet([600, 700], ENEMY_JET, JET_COLOR,100, 2))
+        enemy_healthbar.append(HealthBar(enemy[0].health,[enemy[0].size[0],3], [180,700+enemy[0].size[1]+5]))
+        enemy_healthbar.append(HealthBar(enemy[1].health,[enemy[1].size[0],3], [380,650+enemy[1].size[1]+5]))
+        enemy_healthbar.append(HealthBar(enemy[2].health,[enemy[2].size[0],3], [600,700+enemy[2].size[1]+5]))
     
     for i in enemy:
-        if animation_loop % 20 == 0:
-            generateEnemyBullet(i)
+        if animation_loop>= 20 and animation_loop <= 40:
+            if animation_loop % 5 == 0:
+                generateEnemyBullet(i)
     
     enemyBulletLogic()
     
@@ -250,11 +260,12 @@ def playerBulletLogic():
         else:
             for j in enemy:
                 if i.collision(j):
-                    score += i.damage
                     j.health -= i.damage
                     bullet_player.remove(i)
                     if j.health <= 0:
+                        enemy_healthbar.remove(enemy_healthbar[enemy.index(j)])
                         enemy.remove(j)
+                        score += 10
                         break
 
 def playerfunc():
@@ -271,22 +282,32 @@ def game():
     
     enemyfunc()
     playerfunc()
-        
-def animate(value):
-    global animation_loop, delay
+    
+def timeloop():
+    global animation_loop, delay, gameDelay, timer_loop
     animation_loop = (animation_loop + 1) % 100
+    if animation_loop % 10 == 0:
+        timer_loop = (timer_loop + 1) % 100
+        
+    if delay[0]:
+        if delay[1] == animation_loop:
+            delay = [False, 0]
+    if gameDelay[0]:
+        if gameDelay[1] == animation_loop:
+            gameDelay = [False, 0]
+ 
+def animate(value):
+    global animation_loop, delay, gameDelay
+    
+    timeloop()
     
     if not pausepage:
         backgroundAnimation()
 
-    
-    if delay[0]:
-        if delay[1] == animation_loop:
-            delay = [False, 0]
     if gamepage:
-        game()
+        if not gameDelay[0]:
+            game()
         
-
     glutPostRedisplay()
     glutTimerFunc(30, animate, 5)
     
@@ -296,6 +317,7 @@ glutInitWindowSize(800, 800)
 glutInitWindowPosition(0, 0)
 wind = glutCreateWindow(b"Afterburn Assault")
 animation_loop = 0
+timer_loop = 0
 # background
 starpos = []
 starpos2 = []
@@ -336,13 +358,23 @@ backtoHomeButton = Button([50,700], [0.03,0.64,0.74], 3, 1, [[0, 35, 0, 35, 35, 
 restartButton = Button([282,370], [0.58,0.749,0.56], 4, 3, ['RESTART'], [20,20])
 resumeButton = Button([282,470], [0.58,0.749,0.56], 4, 3, ['RESUME'], [34,20])
 backHomeButton = Button([282,270], [0.58,0.749,0.56], 4, 3, ['HOME'], [62,20])
+# Abilites
+ability1 = [True, 0]
+ability2 = [True, 0]
+ability3 = [True, 0]
+
+ability1_state = [False, 0]
+ability2_state = [False, 0]
+ability3_state = [False, 0]
 
 # gamepage variables
+gameDelay =[False, 0]
 score = 0
 bullet_player = []
 enemy = []
+enemy_healthbar = []    
 enemy_bullet = []
-player = Jet([100,70], JET, JET_COLOR,100, 2)
+player = Jet([100,70], JET, JET_COLOR,1000, 2)
 # enemy = Jet([500,500], ENEMY_JET, JET_COLOR, 2)
 player_healthbar = HealthBar(player.health,[100,10], [5,760])
 
