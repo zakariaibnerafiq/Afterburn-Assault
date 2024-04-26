@@ -10,7 +10,7 @@ from midpointLine import drawLine
 from jet.jet import *
 from jetClass import Jet, jetThrust
 from blinkblink import *
-
+from bullet import *
 from button import Button, Text
 from hpbar import HealthBar
 # ===============Keyboard Listener================
@@ -24,7 +24,7 @@ def specialKeyListener(key, x, y):
         player.pos[0] = (player.pos[0] - 5) % 800
 
 def keyboard(key, x, y):
-    global gamepage, pausepage, homepage, levelpage, gameoverpage, animation_loop, delay
+    global gamepage, pausepage, homepage, levelpage, gameoverpage, animation_loop, delay, bullet_player
     
     if gamepage:
         if not delay[0]:
@@ -39,6 +39,11 @@ def keyboard(key, x, y):
         if key == b'd':
             if player.pos[0] < 800- player.size[0]:
                 player.pos[0] = (player.pos[0] + 10)
+                
+        if key == b' ':
+            bullet = Bullet([player.pos[0]+player.size[0]/2, player.pos[1]+player.size[1]], 10, [0,10],8)
+            bullet_player.append(bullet)
+            
     
     if pausepage:
         if not delay[0]:
@@ -123,6 +128,15 @@ def GAMEPAGE():
     player_healthbar.draw(player.health)
     jetThrust([player.pos[0]+player.size[0]/2-8, player.pos[1]-15], 2)
     
+    for i in enemy:
+        i.draw()
+        
+    for i in bullet_player:
+        i.draw()
+    
+    for i in enemy_bullet:
+        i.draw()
+    
 def PAUSEPAGE():
     restartButton.draw(True)
     resumeButton.draw(True)
@@ -175,17 +189,40 @@ def showScreen():
     
     glutSwapBuffers()
 
+def enemyfunc():
+    global animation_loop, enemy, enemy_bullet
+    if enemy == []:
+        enemy.append(Jet([180, 700], ENEMY_JET, JET_COLOR, 2))
+        enemy.append(Jet([380, 650], ENEMY_JET, JET_COLOR, 2))
+        enemy.append(Jet([600, 700], ENEMY_JET, JET_COLOR, 2))
+    
+    for i in enemy:
+        
+        if animation_loop % 10 == 0:
+            dx, dy = speedCheck(10,  player.pos[0], player.pos[1], i.pos[0], i.pos[1])
+            
+            
+            if dy>0:
+                dy = -dy
+            enemy_bullet.append(Bullet([i.pos[0]+i.size[0]/2, i.pos[1]], 10, [-dx,dy],8))
+    
+    for i in enemy_bullet:
+        i.move()
+        if i.pos[1] < 0:
+            enemy_bullet.remove(i)
 def game():
     glutSpecialFunc(specialKeyListener)
-    
-    
-    
-    global animation_loop
+    global bullet_player, player, animation_loop
+    enemyfunc()
     if animation_loop % 2 == 0:
         player.health -= 1
         if player.health <= 0:
             player.health = 100
-    # enemy.pos[0] = (enemy.pos[0] + 1) % 800
+    
+    for i in bullet_player:
+        i.move()
+        if i.pos[1] > 800:
+            bullet_player.remove(i)
     
             
 def animate(value):
@@ -254,7 +291,10 @@ restartButton = Button([282,370], [0.58,0.749,0.56], 4, 3, ['RESTART'], [20,20])
 resumeButton = Button([282,470], [0.58,0.749,0.56], 4, 3, ['RESUME'], [34,20])
 backHomeButton = Button([282,270], [0.58,0.749,0.56], 4, 3, ['HOME'], [62,20])
 
-
+# gamepage variables
+bullet_player = []
+enemy = []
+enemy_bullet = []
 player = Jet([100,70], JET, JET_COLOR, 2)
 # enemy = Jet([500,500], ENEMY_JET, JET_COLOR, 2)
 

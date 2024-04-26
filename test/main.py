@@ -8,6 +8,7 @@ from midpointCircle import drawCircle
 from midpointLine import drawLine
 from jet.jet import *
 from jetClass import Jet, jetThrust
+from bullet import Bullet
 
 # ===============Keyboard Listener================
 
@@ -79,7 +80,7 @@ delay = [False, 0]
 
 player = Jet([100,70], JET, JET_COLOR, 2)
 # enemy = Jet([500,500], ENEMY_JET, JET_COLOR, 2)
-
+bullet = Bullet([100,100], 10, 1)
 glutDisplayFunc(showScreen)
 animate(5)
 glutKeyboardFunc(keyboard)
