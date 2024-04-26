@@ -32,7 +32,14 @@ class Bullet:
     def move(self): 
         self.pos[0] += self.inc[0]
         self.pos[1] += self.inc[1]
-        
+    
+    def collision(self,jet):
+        x1, y1 = self.pos[0], self.pos[1]
+        x2, y2 = jet.pos[0], jet.pos[1]
+        if x1 < x2 + jet.size[0] and x1 + self.size[0] > x2 and y1 < y2 + jet.size[1] and y1 + self.size[1] > y2:
+            return True
+        return False
+    
 def speedCheck(sp, x1, y1, x2, y2):
     if x1 == x2:
         if y1 > y2:

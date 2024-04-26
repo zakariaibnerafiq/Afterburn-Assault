@@ -44,15 +44,13 @@ def keyboard(key, x, y):
             bullet = Bullet([player.pos[0]+player.size[0]/2, player.pos[1]+player.size[1]], 10, [0,10],8)
             bullet_player.append(bullet)
             
-    
     if pausepage:
         if not delay[0]:
             if key == b'\x1b':
                 pausepage = False
                 gamepage = True
                 delay = [True, (animation_loop-90)%100]
-
-            
+          
 def mouse(button, state, x, y):
     y = 800 - y
     global homepage, levelpage, gamepage, pausepage, gameoverpage, level, delay,animation_loop
@@ -82,6 +80,7 @@ def mouse(button, state, x, y):
     elif pausepage:
         if not delay[0]:
             if restartButton.pressed(x, y):
+                resetGame()
                 pausepage = False
                 gamepage = True
             if resumeButton.pressed(x, y):
@@ -91,6 +90,15 @@ def mouse(button, state, x, y):
                 pausepage = False
                 homepage = True
                 delay = [True, (animation_loop-90)%100]
+
+def resetGame():
+    global bullet_player, player, enemy, enemy_bullet
+    bullet_player = []
+    enemy = []
+    enemy_bullet = []
+    player.health = 1000
+    player_healthbar.health = player.health
+
 def BACKGROUND():
     for i in range(50):
         DRAWMATRIX.draw(starpos[i], STARBIG, STARCOLOR, 1)
@@ -118,12 +126,12 @@ def LEVELPAGE():
     backtoHomeButton.draw()
     Text.draw("HOME", [100, 714], [0.03,0.64,0.74], 4)
     
-def LEVEL_ONE():
-    pass
- 
-    
 def GAMEPAGE():
     global animation_loop, level
+    
+    if player.health >= 0:
+        Text.draw("HP "+str(player.health), [10, 770], [0.858,0.505,0.482], 1)
+    
     player.draw()
     player_healthbar.draw(player.health)
     jetThrust([player.pos[0]+player.size[0]/2-8, player.pos[1]-15], 2)
@@ -141,21 +149,6 @@ def PAUSEPAGE():
     restartButton.draw(True)
     resumeButton.draw(True)
     backHomeButton.draw(True)  
-
-def backgroundAnimation():
-    for i in range(50):
-        starpos[i][1] = (starpos[i][1] - 1) % 800
-        starpos2[i][1] = (starpos2[i][1] - 1.5) % 800
-    for i in range(800):
-        starpos3[i][1] = (starpos3[i][1] - 0.5) % 800
-        
-    for i in meteor:
-        i[0][1] = (i[0][1] - i[2]*1.5) 
-        i[0][0] = (i[0][0] - i[2]) 
-        if i[0][1] < -17*i[2] or i[0][0] < -17*i[2]:
-            i[0][0] = random.randint(0,1200)
-            i[0][1] = 800
-            i[2] = random.randint(1,3)
         
 def iterate():
     glViewport(0, 0, 800, 800)
@@ -188,41 +181,73 @@ def showScreen():
         pass
     
     glutSwapBuffers()
-
-def enemyfunc():
-    global animation_loop, enemy, enemy_bullet
-    if enemy == []:
-        enemy.append(Jet([180, 700], ENEMY_JET, JET_COLOR, 2))
-        enemy.append(Jet([380, 650], ENEMY_JET, JET_COLOR, 2))
-        enemy.append(Jet([600, 700], ENEMY_JET, JET_COLOR, 2))
     
-    for i in enemy:
+def backgroundAnimation():
+    for i in range(50):
+        starpos[i][1] = (starpos[i][1] - 1) % 800
+        starpos2[i][1] = (starpos2[i][1] - 1.5) % 800
+    for i in range(800):
+        starpos3[i][1] = (starpos3[i][1] - 0.5) % 800
         
-        if animation_loop % 10 == 0:
-            dx, dy = speedCheck(10,  player.pos[0], player.pos[1], i.pos[0], i.pos[1])
-            
-            
-            if dy>0:
-                dy = -dy
-            enemy_bullet.append(Bullet([i.pos[0]+i.size[0]/2, i.pos[1]], 10, [-dx,dy],8))
-    
+    for i in meteor:
+        i[0][1] = (i[0][1] - i[2]*1.5) 
+        i[0][0] = (i[0][0] - i[2]) 
+        if i[0][1] < -17*i[2] or i[0][0] < -17*i[2]:
+            i[0][0] = random.randint(0,1200)
+            i[0][1] = 800
+            i[2] = random.randint(1,3)
+
+def generateEnemyBullet(i):  
+    dx, dy = speedCheck(10,  player.pos[0], player.pos[1], i.pos[0], i.pos[1])
+    if player.pos[0] < i.pos[0]:
+        dx = -dx
+    if dy > 0:
+        dy = -dy
+    enemy_bullet.append(Bullet([i.pos[0]+i.size[0]/2, i.pos[1]], 10, [dx,dy],8))     
+
+def enemyBulletLogic():
     for i in enemy_bullet:
         i.move()
         if i.pos[1] < 0:
             enemy_bullet.remove(i)
-def game():
-    glutSpecialFunc(specialKeyListener)
-    global bullet_player, player, animation_loop
-    enemyfunc()
-    if animation_loop % 2 == 0:
-        player.health -= 1
-        if player.health <= 0:
-            player.health = 100
+        elif i.collision(player):
+            player.health -= i.damage
+            enemy_bullet.remove(i)
+            
+def enemyfunc():
+    global animation_loop, enemy, enemy_bullet
+    if enemy == []:
+        enemy.append(Jet([180, 700], ENEMY_JET, JET_COLOR,100, 2))
+        enemy.append(Jet([380, 650], ENEMY_JET, JET_COLOR,100, 2))
+        enemy.append(Jet([600, 700], ENEMY_JET, JET_COLOR,100, 2))
     
+    for i in enemy:
+        if animation_loop % 20 == 0:
+            generateEnemyBullet(i)
+    
+    enemyBulletLogic()
+    
+def playerBulletLogic():
     for i in bullet_player:
         i.move()
         if i.pos[1] > 800:
             bullet_player.remove(i)
+        else:
+            for j in enemy:
+                if i.collision(j):
+                    j.health -= i.damage
+                    bullet_player.remove(i)
+                    if j.health <= 0:
+                        enemy.remove(j)
+                        break
+def game():
+    glutSpecialFunc(specialKeyListener)
+    global bullet_player, player, animation_loop
+    
+    enemyfunc()
+    
+    playerBulletLogic()
+        
     
             
 def animate(value):
@@ -232,7 +257,6 @@ def animate(value):
     if not pausepage:
         backgroundAnimation()
 
-    
     
     if delay[0]:
         if delay[1] == animation_loop:
@@ -295,10 +319,10 @@ backHomeButton = Button([282,270], [0.58,0.749,0.56], 4, 3, ['HOME'], [62,20])
 bullet_player = []
 enemy = []
 enemy_bullet = []
-player = Jet([100,70], JET, JET_COLOR, 2)
+player = Jet([100,70], JET, JET_COLOR,1000, 2)
 # enemy = Jet([500,500], ENEMY_JET, JET_COLOR, 2)
+player_healthbar = HealthBar(player.health,[100,10], [5,760])
 
-player_healthbar = HealthBar(100,[50,10], [5,760])
 glutDisplayFunc(showScreen)
 animate(5)
 glutKeyboardFunc(keyboard)

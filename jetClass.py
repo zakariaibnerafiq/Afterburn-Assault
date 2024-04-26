@@ -7,13 +7,13 @@ from jet.jet import *
 from blinkblink import *
 
 class Jet:
-    def __init__(self, pos, drawArr, colorPalette, px = 1):
+    def __init__(self, pos, drawArr, colorPalette,health, px = 1):
         self.pos = pos
         self.drawArr = drawArr
         self.colorPalette = colorPalette
         self.px = px
         self.size = [len(drawArr[0])*px, len(drawArr)*px]
-        self.health = 100
+        self.health = health
     
     def draw(self, boundary = False):
         x = len(self.drawArr)
