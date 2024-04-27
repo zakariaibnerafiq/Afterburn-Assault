@@ -5,7 +5,7 @@ import random
 # importing Assets
 from midpointCircle import drawCircle
 from midpointLine import drawLine
-from jet.jet import *
+from jetAssets import *
 from jetClass import Jet, jetThrust
 from blinkblink import *
 from bullet import *
@@ -152,9 +152,9 @@ def LEVELPAGE():
 def GAMEPAGE():
     global animation_loop, level, ability1_state, ability2_state, ability2_counter, ability1_counter
     
-    Text.draw("SCORE "+str(score), [5, 720], [0.858,0.505,0.482], 1)
+    Text.draw("SCORE "+str(score), [5, 710], [0.858,0.505,0.482], 1)
     if player.health >= 0:
-        Text.draw("HP "+str(player.health), [5, 770], [0.858,0.505,0.482], 1)
+        Text.draw("HP "+str(player.health), [5, 775], [0.858,0.505,0.482], 1)
     if not ability1_state[0]:
         Text.draw("PRESS 1 FOR SHIELD", [5, 640], [0.858,0.505,0.482], 1)
     else:
@@ -164,10 +164,15 @@ def GAMEPAGE():
     else:
         Text.draw("HEAL AVAILABLE IN "+str(ability2_counter), [5, 620], [0.858,0.505,0.482], 1)
     if player.shieldStatus:
-        Text.draw("SHIELD "+str(player.shield), [5, 740], [0.858,0.505,0.482], 1)
+        Text.draw("SHIELD "+str(player.shield), [5, 745], [0.858,0.505,0.482], 1)
         player_shield.draw(player.shield)
         
     player.draw()
+    if player.shieldStatus:
+        drawCircle([player.pos[0]+player.size[0]/2, player.pos[1]+player.size[1]/2], 50, STARCOLOR[4]+[0.2], 2)
+        drawCircle([player.pos[0]+player.size[0]/2, player.pos[1]+player.size[1]/2], 48, STARCOLOR[3]+[0.2], 2)
+        drawCircle([player.pos[0]+player.size[0]/2, player.pos[1]+player.size[1]/2], 46, STARCOLOR[2]+[0.2], 2)
+        drawCircle([player.pos[0]+player.size[0]/2, player.pos[1]+player.size[1]/2], 44, STARCOLOR[1]+[0.2], 2)
     player_healthbar.draw(player.health)
     jetThrust([player.pos[0]+player.size[0]/2-8, player.pos[1]-15], 2)
     
@@ -356,8 +361,6 @@ def timeloop():
         if gameDelay[1] == animation_loop:
             gameDelay = [False, 0]
             
-    
- 
 def animate(value):
     global animation_loop, delay, gameDelay
     

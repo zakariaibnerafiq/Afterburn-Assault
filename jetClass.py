@@ -3,7 +3,7 @@ from OpenGL.GLUT import *
 from OpenGL.GLU import *
 import numpy as np
 from midpointLine import drawLine
-from jet.jet import *
+from kkk.jet import *
 from blinkblink import *
 
 class Jet:

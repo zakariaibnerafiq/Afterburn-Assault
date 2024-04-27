@@ -13,7 +13,10 @@ def drawCirclePoint(center, x, y):
     glVertex2f(center[0] - y, center[1] - x)
     
 def drawCircle(center, radius, color, px):
-    glColor3f(color[0], color[1], color[2])
+    if len(color) == 3:
+        glColor3f(color[0], color[1], color[2])
+    if len(color) == 4:
+        glColor4f(color[0], color[1], color[2], color[3])
     glPointSize(px)
     glBegin(GL_POINTS)
     # Midpoint Circle Drawing Algorithm
