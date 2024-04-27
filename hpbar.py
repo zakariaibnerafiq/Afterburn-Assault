@@ -32,3 +32,4 @@ class HealthBar:
         
         for i in range(healthpercent):
             drawLine(self.pos[0]+i, self.pos[1], self.pos[0]+i, self.pos[1]+self.height, color, 1)
+            

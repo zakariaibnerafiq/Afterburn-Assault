@@ -12,7 +12,6 @@ STARBIG = [[0,0,0,0,1,0,0,0,0],
            [0,0,0,0,2,0,0,0,0],
            [0,0,0,0,1,0,0,0,0]]
 
-
 STARCOLOR= {
     1: [0.0039, 0.28, 0.509],
     2: [0, 0.34, 0.68],
@@ -31,10 +30,10 @@ def smallStar(pos,color,px = 1):
     y = pos[1]
     glPointSize(px)
     glBegin(GL_POINTS)
-    top = [x,y+1*px]
-    bottom = [x,y-1*px]
-    left = [x-1*px,y]
-    right = [x+1*px,y]
+    top = [x,y+px]
+    bottom = [x,y-px]
+    left = [x-px,y]
+    right = [x+px,y]
     glColor3f(color[0],color[1],color[2])
     glVertex2f(x,y)
     glColor4f(color[0],color[1],color[2],0.5)
@@ -58,7 +57,6 @@ class DRAWMATRIX:
                     c = colorPalette[drawArr[i][j]]
                     glColor3f(c[0],c[1],c[2])
                     glVertex2f(x_,y_)
-        
         glEnd()
 
 def drawPoints(pos, color, px = 1):

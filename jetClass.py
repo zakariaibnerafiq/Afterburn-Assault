@@ -1,9 +1,8 @@
 from OpenGL.GL import *
 from OpenGL.GLUT import *
 from OpenGL.GLU import *
-import numpy as np
 from midpointLine import drawLine
-from kkk.jet import *
+from jetAssets import *
 from blinkblink import *
 
 class Jet:

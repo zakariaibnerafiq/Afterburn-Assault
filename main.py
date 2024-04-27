@@ -78,6 +78,7 @@ def mouse(button, state, x, y):
             if backtoHomeButton.pressed(x, y):
                 levelpage = False
                 homepage = True
+            
     
     elif pausepage:
         if not delay[0]:
@@ -394,15 +395,14 @@ for i in range(50):
 for i in range(800):
     starpos3.append([random.randint(0,800), random.randint(0,800)])
 
-meteor.append([[random.randint(0,800), 800], [0.4,0.725,0.983], random.randint(1,3)])
-meteor.append([[random.randint(0,800), 800], [0.4,0.725,0.983], random.randint(1,3)])
-meteor.append([[random.randint(0,800), 800], [0.4,0.725,0.983], random.randint(1,3)])
-meteor.append([[random.randint(0,800), 800], [0.4,0.725,0.983], random.randint(1,3)])
-meteor.append([[random.randint(0,800), 800], [0.4,0.725,0.983], random.randint(1,3)])
-meteor.append([[random.randint(0,800), 800], [0.4,0.725,0.983], random.randint(1,3)])
+meteor.append([[random.randint(0,1200), 800], [0.4,0.725,0.983], random.randint(1,3)])
+meteor.append([[random.randint(0,1200), 800], [0.4,0.725,0.983], random.randint(1,3)])
+meteor.append([[random.randint(0,1200), 800], [0.4,0.725,0.983], random.randint(1,3)])
+meteor.append([[random.randint(0,1200), 800], [0.4,0.725,0.983], random.randint(1,3)])
+meteor.append([[random.randint(0,1200), 800], [0.4,0.725,0.983], random.randint(1,3)])
+meteor.append([[random.randint(0,1200), 800], [0.4,0.725,0.983], random.randint(1,3)])
 # Page Logic
 delay = [False, 0]
-wave = 0
 homepage = True
 levelpage = False
 gamepage = False
@@ -419,11 +419,11 @@ quitButton = Button([324,300], [0.788,0.392,0.501], 4, 3, ['EXIT'], [20,20])
 # Button Logic - Levelpage
 level1_button = Button([282,400], [0.58,0.749,0.56], 4, 3, ['LEVEL 1'], [20,20])
 level2_button = Button([282,300], [0.58,0.749,0.56], 4, 3, ['LEVEL 2'], [20,20])
-# Universal Button
 backtoHomeButton = Button([50,700], [0.03,0.64,0.74], 3, 1, [[0, 35, 0, 35, 35, 165, 35,165, 165, 165],[25, 50, 25, 0, 50, 50,0,0, 50, 0]], [5,5])
 # pause menu button
 restartButton = Button([282,370], [0.58,0.749,0.56], 4, 3, ['RESTART'], [20,20])
 resumeButton = Button([282,470], [0.58,0.749,0.56], 4, 3, ['RESUME'], [34,20])
+# universal button
 backHomeButton = Button([282,270], [0.58,0.749,0.56], 4, 3, ['HOME'], [62,20])
 # Abilites
 
@@ -434,6 +434,7 @@ ability2_state = [False, 0]
 
 
 # gamepage variables
+wave = 0
 gameDelay =[False, 0]
 score = 0
 bullet_player = []
